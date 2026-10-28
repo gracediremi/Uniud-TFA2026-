@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Storico: Gli Egizi</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lexend:wght@300;400;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Lexend', 'sans-serif'],
+            dyslexic: ['Atkinson Hyperlegible', 'sans-serif'],
+            serif: ['Cinzel', 'serif'],
+          },
+          colors: {
+            egypt: {
+              gold: '#D4AF37',
+              darkGold: '#997A15',
+              lapis: '#1034A6',
+              darkLapis: '#0B2068',
+              turquoise: '#20B2AA',
+              papyrus: '#F4E8C1',
+              darkPapyrus: '#3B2F17',
+              red: '#8B0000',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Lexend', sans-serif;
+      background: radial-gradient(circle, #f9f4e8 0%, #e8d7b0 100%);
+      color: #2b2118;
+      user-select: none;
+      min-height: 100vh;
+    }
+
+    /* Accessibility Dyslexia Font Class */
+    .font-dyslexia-mode {
+      font-family: 'Atkinson Hyperlegible', sans-serif !important;
+      letter-spacing: 0.05em !important;
+      word-spacing: 0.15em !important;
+      line-height: 1.6 !important;
+    }
+
+    /* 3D Card Flip Mechanics */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      border: 3px solid;
+    }
+
+    /* Themes for Card Back */
+    .theme-tutankhamon {
+      background: linear-gradient(135deg, #1034A6 0%, #0B2068 55%, #D4AF37 100%);
+      border-color: #D4AF37;
+      color: #D4AF37;
+    }
+    .theme-papyrus {
+      background: linear-gradient(135deg, #F4E8C1 0%, #D8C28A 100%);
+      border-color: #8B5A2B;
+      color: #5C3A13;
+    }
+    .theme-lapis {
+      background: linear-gradient(135deg, #0d5c75 0%, #052c38 100%);
+      border-color: #20B2AA;
+      color: #20B2AA;
+    }
+
+    /* Card Front Styling */
+    .card-front {
+      background-color: #ffffff;
+      color: #1a1a1a;
+      transform: rotateY(180deg);
+      border-color: #D4AF37;
+    }
+    .matched .card-front {
+      border-color: #10B981 !important;
+      background-color: #F0FDF4 !important;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.5);
+    }
+
+    /* Card Shapes */
+    .shape-rounded { border-radius: 0.85rem; }
+    .shape-circle { border-radius: 9999px; }
+    .shape-octagon { clip-path: polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%); border-radius: 0; }
+
+    /* SVG Art Styles */
+    .svg-icon-art {
+      width: 100%;
+      height: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .svg-icon-art svg {
+      width: 100%;
+      height: 100%;
+      max-height: 80px;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+    }
+  </style>
+</head>
+<body class="flex flex-col justify-between antialiased transition-colors duration-300 min-h-screen">
+
+  <!-- TOP HEADER -->
+  <header class="bg-egypt-darkLapis text-white shadow-xl border-b-4 border-egypt-gold no-print">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full border-2 border-egypt-gold overflow-hidden bg-egypt-gold flex items-center justify-center text-egypt-darkLapis text-xl font-black shadow">
+          <i class="fa-solid fa-ankh"></i>
+        </div>
+        <div>
+          <h1 class="font-serif text-lg sm:text-2xl font-black tracking-widest text-egypt-gold uppercase">Memory Storico: Gli Egizi</h1>
+          <p class="text-xs text-blue-200">Illustrazioni Vettoriali e Percorso Didattico Inclusivo</p>
+        </div>
+      </div>
+
+      <!-- Quick Controls -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleTTS()" id="ttsBtn" title="Sintesi Vocale (Lettura)" class="px-3 py-1.5 bg-blue-900/80 hover:bg-blue-800 rounded-lg text-xs font-semibold border border-egypt-gold/50 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-volume-high text-egypt-gold"></i> <span class="hidden sm:inline">Voce: <span id="ttsStatus">ON</span></span>
+        </button>
+        <button onclick="toggleDyslexiaFont()" title="Carattere Alta Leggibilità" class="px-3 py-1.5 bg-blue-900/80 hover:bg-blue-800 rounded-lg text-xs font-semibold border border-egypt-gold/50 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-font text-amber-300"></i> <span class="hidden sm:inline">Leggibilità</span>
+        </button>
+        <button onclick="openModal('infoModal')" class="px-3 py-1.5 bg-egypt-gold hover:bg-yellow-500 text-egypt-darkLapis font-bold rounded-lg text-xs transition flex items-center gap-1">
+          <i class="fa-solid fa-graduation-cap"></i> <span class="hidden sm:inline">Pedagogia</span>
+        </button>
+        <button onclick="openModal('settingsModal')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg text-xs transition flex items-center gap-1">
+          <i class="fa-solid fa-gear"></i> <span class="hidden sm:inline">Opzioni</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-6xl mx-auto w-full px-4 py-4 flex-grow flex flex-col justify-start items-center">
+
+    <!-- STATS DASHBOARD & CONTROLS -->
+    <div class="w-full bg-white/95 backdrop-blur rounded-2xl p-4 shadow-lg border-2 border-egypt-gold/50 mb-4 no-print">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-center text-center">
+        
+        <!-- Player Turn / Mode -->
+        <div class="bg-egypt-papyrus/70 p-2 rounded-xl border border-egypt-gold/40 col-span-2 md:col-span-1">
+          <div class="text-[10px] uppercase font-bold text-gray-600 tracking-wider">Modalità / Turno</div>
+          <div id="playerTurnDisplay" class="font-bold text-egypt-darkLapis text-xs sm:text-sm truncate">Giocatore Singolo</div>
+        </div>
+
+        <!-- Level Indicator -->
+        <div class="bg-egypt-papyrus/70 p-2 rounded-xl border border-egypt-gold/40">
+          <div class="text-[10px] uppercase font-bold text-gray-600 tracking-wider">Livello Didattico</div>
+          <div id="currentLevelDisplay" class="font-bold text-amber-900 text-xs sm:text-sm truncate">L2: Grafica - Parola</div>
+        </div>
+
+        <!-- Pairs Counter -->
+        <div class="bg-egypt-papyrus/70 p-2 rounded-xl border border-egypt-gold/40">
+          <div class="text-[10px] uppercase font-bold text-gray-600 tracking-wider">Coppie / Mosse</div>
+          <div class="font-bold text-egypt-darkLapis text-xs sm:text-base"><span id="pairsFound">0</span>/<span id="totalPairs">6</span> | <span id="movesCount" class="text-amber-800">0</span></div>
+        </div>
+
+        <!-- Timer -->
+        <div class="bg-egypt-papyrus/70 p-2 rounded-xl border border-egypt-gold/40">
+          <div class="text-[10px] uppercase font-bold text-gray-600 tracking-wider">Tempo Rimanente</div>
+          <div id="timerDisplay" class="font-bold text-egypt-darkLapis text-xs sm:text-base">Illimitato</div>
+        </div>
+
+        <!-- Restart Button -->
+        <div class="col-span-2 md:col-span-1 flex gap-2 justify-center">
+          <button onclick="initGame()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition text-xs sm:text-sm flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-rotate-right"></i> Nuova Partita
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ENCOURAGEMENT & SELF-REGULATION BANNER -->
+    <div id="feedbackBanner" class="w-full mb-3 p-3 text-center rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 bg-amber-100/90 text-amber-900 border border-amber-300 shadow-sm flex items-center justify-center gap-2">
+      <i class="fa-solid fa-brain text-amber-700 text-base"></i>
+      <span id="feedbackText">Osserva le illustrazioni ed elementi dell'Antico Egitto per memorizzare la loro posizione!</span>
+    </div>
+
+    <!-- GAME BOARD GRID -->
+    <div id="gameBoard" class="w-full grid gap-3 my-auto justify-center items-center py-2">
+      <!-- Cards rendered via JS -->
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-egypt-darkLapis text-egypt-papyrus text-xs py-3 text-center border-t-2 border-egypt-gold no-print">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div>Memory Storico: Gli Egizi con Grafica Vettoriale &copy; Didattica Inclusiva BES / DSA</div>
+      <div class="flex gap-4">
+        <button onclick="downloadHTML()" class="hover:text-egypt-gold underline flex items-center gap-1">
+          <i class="fa-solid fa-download"></i> Scarica App Offline
+        </button>
+        <button onclick="openModal('infoModal')" class="hover:text-egypt-gold underline">Scheda Pedagogica</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. SETTINGS MODAL -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border-4 border-egypt-gold max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h2 class="text-xl font-bold font-serif text-egypt-darkLapis flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-egypt-gold"></i> Impostazioni Didattiche
+        </h2>
+        <button onclick="closeModal('settingsModal')" class="text-gray-400 hover:text-gray-800 text-2xl font-bold">&times;</button>
+      </div>
+
+      <form id="settingsForm" onsubmit="applySettings(event)" class="space-y-4 text-sm">
+        
+        <!-- Level Selection -->
+        <div>
+          <label class="block font-bold text-gray-800 mb-1">Livello di Difficoltà (Progressione):</label>
+          <select id="settingLevel" class="w-full p-2.5 border-2 border-gray-300 rounded-xl focus:border-egypt-gold">
+            <option value="1">Livello 1: Grafica SVG ➔ Grafica Identica (Identità visiva pulita)</option>
+            <option value="2" selected>Livello 2: Grafica ➔ Nome / Parola (Es: Illustrazione Piramide ➔ PIRAMIDE)</option>
+            <option value="3">Livello 3: Personaggio / Oggetto ➔ Azione o Simbolo (Es: Tutankhamon ➔ Tomba Intatta 1922)</option>
+            <option value="4">Livello 4: Fatto Storico ➔ Data / Periodo (Es: Piramide di Cheope ➔ ~2560 a.C.)</option>
+            <option value="5">Livello 5: Concetto / Causa ➔ Conseguenza (Es: Inondazioni Nilo ➔ Limo Fertile)</option>
+          </select>
+        </div>
+
+        <!-- Cards Count -->
+        <div>
+          <label class="block font-bold text-gray-800 mb-1">Numero di Tessere (Carte):</label>
+          <select id="settingCardCount" class="w-full p-2.5 border-2 border-gray-300 rounded-xl focus:border-egypt-gold">
+            <option value="6">6 Tessere (3 Coppie - Carico minimo / Avvio)</option>
+            <option value="8">8 Tessere (4 Coppie - Supporto BES/DSA)</option>
+            <option value="12" selected>12 Tessere (6 Coppie - Standard Didattico)</option>
+            <option value="16">16 Tessere (8 Coppie - Intermedio)</option>
+            <option value="20">20 Tessere (10 Coppie - Sfida Completa)</option>
+          </select>
+        </div>
+
+        <!-- Mode Selection -->
+        <div>
+          <label class="block font-bold text-gray-800 mb-1">Modalità di Gioco:</label>
+          <select id="settingGameMode" class="w-full p-2.5 border-2 border-gray-300 rounded-xl focus:border-egypt-gold">
+            <option value="single">Giocatore Singolo (Autoregolazione)</option>
+            <option value="coop">Cooperativa a Turni (2 Giocatori / Insieme)</option>
+          </select>
+        </div>
+
+        <!-- Foreign Language Options -->
+        <div>
+          <label class="block font-bold text-gray-800 mb-1">Lingua Straniera Vocabolario (Livello 2):</label>
+          <select id="settingLanguage" class="w-full p-2.5 border-2 border-gray-300 rounded-xl focus:border-egypt-gold">
+            <option value="it">Italiano (Standard)</option>
+            <option value="en">Inglese (Pyramid, Sphinx, Pharaoh, Hieroglyphs...)</option>
+            <option value="fr">Francese (Pyramide, Sphinx, Pharaon, Hiéroglyphes...)</option>
+          </select>
+        </div>
+
+        <!-- Timer Options -->
+        <div>
+          <label class="block font-bold text-gray-800 mb-1">Tempo Limite (Timer):</label>
+          <select id="settingTimer" class="w-full p-2.5 border-2 border-gray-300 rounded-xl focus:border-egypt-gold">
+            <option value="0">Disattivato (Senza ansia temporale)</option>
+            <option value="60">60 Secondi</option>
+            <option value="90">90 Secondi</option>
+            <option value="120">120 Secondi</option>
+          </select>
+        </div>
+
+        <!-- Theme & Shape Customization -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-gray-800 mb-1">Stile Retro Tessere:</label>
+            <select id="settingTheme" class="w-full p-2.5 border-2 border-gray-300 rounded-xl">
+              <option value="theme-tutankhamon">Blu & Oro Tutankhamon</option>
+              <option value="theme-papyrus">Papiro Antico</option>
+              <option value="theme-lapis">Pietra Lapislazzuli</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-gray-800 mb-1">Forma Tessere:</label>
+            <select id="settingShape" class="w-full p-2.5 border-2 border-gray-300 rounded-xl">
+              <option value="shape-rounded">Rettangolare Arrotondata</option>
+              <option value="shape-circle">Circolare (Medaglione)</option>
+              <option value="shape-octagon">Ottagonale</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t">
+          <button type="button" onclick="closeModal('settingsModal')" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl font-bold">Annulla</button>
+          <button type="submit" class="px-5 py-2 bg-egypt-darkLapis hover:bg-blue-900 text-white rounded-xl font-bold shadow">Salva e Riavvia</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. DIDACTIC INFO MODAL -->
+  <div id="infoModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border-4 border-egypt-gold max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h2 class="text-xl font-bold font-serif text-egypt-darkLapis flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-egypt-gold"></i> Scheda Pedagogica "Memory Storico"
+        </h2>
+        <button onclick="closeModal('infoModal')" class="text-gray-400 hover:text-gray-800 text-2xl font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-4 text-sm text-gray-700 leading-relaxed">
+        <div class="bg-egypt-papyrus/50 p-3 rounded-xl border border-egypt-gold/40">
+          <h3 class="font-bold text-amber-900 text-base mb-1">Prerequisiti & Approccio Grafico Pulito</h3>
+          <p>• Utilizzo di <strong>illustrazioni vettoriali ed elementi iconici puliti</strong> per facilitare l'attenzione visivo-spaziale, evitando distrazioni e sovraccarico cognitivo.<br>• Capacità di lettura di brevi parole o pura associazione visiva guidata.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-3">
+          <div class="border p-3 rounded-xl bg-emerald-50 border-emerald-200">
+            <h4 class="font-bold text-emerald-900 mb-1"><i class="fa-solid fa-bullseye"></i> Obiettivi Primari</h4>
+            <ul class="list-disc list-inside space-y-1 text-xs">
+              <li><strong>Memoria di Lavoro Visiva:</strong> Mantenimento e associazione spaziale.</li>
+              <li><strong>Attenzione Visivo-Spaziale:</strong> Scansione organizzata del reticolo.</li>
+              <li><strong>Lessico Storico:</strong> Vocabolario specifico della civiltà egizia.</li>
+              <li><strong>Associazione Concettuale:</strong> Nesso tra simbolo, evento, data e causa.</li>
+            </ul>
+          </div>
+
+          <div class="border p-3 rounded-xl bg-blue-50 border-blue-200">
+            <h4 class="font-bold text-blue-900 mb-1"><i class="fa-solid fa-users"></i> Obiettivi Secondari</h4>
+            <ul class="list-disc list-inside space-y-1 text-xs">
+              <li><strong>Cooperazione & Turni:</strong> Rispettare i tempi e sostenere il compagno.</li>
+              <li><strong>Autoregolazione Emotiva:</strong> Risposta positiva agli errori.</li>
+              <li><strong>Accessibilità BES/DSA:</strong> Font ad alta leggibilità e sintesi vocale TTS.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-egypt-darkLapis text-base mb-1">I 5 Livelli di Progressione Didattica</h3>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs bg-gray-50 p-3 rounded-xl border">
+            <li><strong>Livello 1 (Grafica ➔ Grafica Identica):</strong> Carico cognitivo minimo per la familiarizzazione.</li>
+            <li><strong>Livello 2 (Grafica ➔ Nome/Parola):</strong> Transizione dall'immagine al simbolo verbale/scritto (anche L2).</li>
+            <li><strong>Livello 3 (Personaggio/Oggetto ➔ Azione/Simbolo):</strong> Collegamento del concetto storico al suo significato.</li>
+            <li><strong>Livello 4 (Elemento Storico ➔ Data/Periodo):</strong> Collocazione nel tempo e nella cronologia.</li>
+            <li><strong>Livello 5 (Causa Storica ➔ Spiegazione/Conseguenza):</strong> Sviluppo del pensiero causale complesso.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-4 border-t mt-4">
+        <button onclick="closeModal('infoModal')" class="px-5 py-2 bg-egypt-darkLapis hover:bg-blue-900 text-white rounded-xl font-bold">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. REPORT / VICTORY MODAL -->
+  <div id="reportModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-4 border-egypt-gold text-center">
+      <div id="reportHeader">
+        <div class="inline-block p-3 bg-amber-100 rounded-full mb-2">
+          <i class="fa-solid fa-trophy text-4xl text-egypt-gold animate-bounce"></i>
+        </div>
+        <h2 class="text-2xl font-bold font-serif text-egypt-darkLapis" id="reportTitle">Ottimo Lavoro!</h2>
+        <p class="text-xs text-gray-600 mb-4" id="reportSubtitle">Esercizio di Memory Storico completato</p>
+      </div>
+
+      <!-- Stats Summary -->
+      <div class="bg-egypt-papyrus/60 p-4 rounded-xl border border-egypt-gold/40 text-left mb-4 space-y-2 text-xs sm:text-sm">
+        <div class="flex justify-between border-b border-amber-200 pb-1">
+          <span class="text-gray-600">Livello Completato:</span>
+          <span id="reportLevel" class="font-bold text-egypt-darkLapis">--</span>
+        </div>
+        <div class="flex justify-between border-b border-amber-200 pb-1">
+          <span class="text-gray-600">Mosse Effettuate:</span>
+          <span id="reportMoves" class="font-bold text-egypt-darkLapis">0</span>
+        </div>
+        <div class="flex justify-between border-b border-amber-200 pb-1">
+          <span class="text-gray-600">Tempo Impiegato:</span>
+          <span id="reportTime" class="font-bold text-egypt-darkLapis">0s</span>
+        </div>
+        <div class="flex justify-between border-b border-amber-200 pb-1">
+          <span class="text-gray-600">Accuratezza Memoria:</span>
+          <span id="reportAccuracy" class="font-bold text-emerald-700">100%</span>
+        </div>
+        <div id="reportCoopScores" class="hidden pt-2 text-xs border-t border-amber-300">
+          <div class="font-bold text-egypt-darkLapis mb-1">Risultato Cooperativo:</div>
+          <div class="flex justify-between">
+            <span>Giocatore 1: <strong id="p1Score">0</strong> coppie</span>
+            <span>Giocatore 2: <strong id="p2Score">0</strong> coppie</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="reportPedagogicalFeedback" class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-900 mb-4 italic">
+        "Hai dimostrato un'eccellente memoria visiva e concentrazione sugli elementi dell'Antico Egitto!"
+      </div>
+
+      <div class="flex flex-wrap gap-2 justify-center no-print">
+        <button onclick="window.print()" class="px-4 py-2 bg-stone-700 hover:bg-stone-800 text-white rounded-xl text-xs font-bold flex items-center gap-1">
+          <i class="fa-solid fa-print"></i> Stampa Report
+        </button>
+        <button onclick="closeModal('reportModal'); initGame();" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1">
+          <i class="fa-solid fa-play"></i> Nuova Partita
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* CLEAN VECTOR SVG GRAPHICS DATABASE */
+    const VECTOR_GRAPHICS = {
+      pyramid: {
+        title: "Piramide",
+        color: "#D4AF37",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="50,12 10,82 90,82" fill="#F4C430" stroke="#997A15" stroke-width="3" stroke-linejoin="round"/>
+          <polygon points="50,12 50,82 90,82" fill="#D4AF37" opacity="0.8"/>
+          <line x1="50" y1="12" x2="50" y2="82" stroke="#8B6914" stroke-width="2"/>
+          <line x1="30" y1="47" x2="70" y2="47" stroke="#B8860B" stroke-width="1.5" opacity="0.6"/>
+          <line x1="20" y1="65" x2="80" y2="65" stroke="#B8860B" stroke-width="1.5" opacity="0.6"/>
+        </svg>`
+      },
+      pharaoh: {
+        title: "Faraone",
+        color: "#1034A6",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25,85 L25,45 C25,25 35,15 50,15 C65,15 75,25 75,45 L75,85 Z" fill="#1034A6" stroke="#0B2068" stroke-width="3"/>
+          <path d="M30,30 Q50,10 70,30 Q70,55 50,60 Q30,55 30,30 Z" fill="#D4AF37"/>
+          <circle cx="50" cy="38" r="14" fill="#F4E8C1"/>
+          <path d="M42,50 L58,50 L55,75 L45,75 Z" fill="#D4AF37" stroke="#0B2068" stroke-width="1.5"/>
+          <path d="M25,40 L75,40" stroke="#D4AF37" stroke-width="4"/>
+          <path d="M25,50 L75,50" stroke="#D4AF37" stroke-width="3"/>
+        </svg>`
+      },
+      sphinx: {
+        title: "Sfinge",
+        color: "#C2B280",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15,78 L85,78 L80,55 L65,50 L55,30 L45,30 L35,50 L20,55 Z" fill="#D8C28A" stroke="#8B5A2B" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="50" cy="32" r="11" fill="#E8D7B0"/>
+          <path d="M42,24 Q50,16 58,24 L60,38 L40,38 Z" fill="#1034A6" opacity="0.8"/>
+          <rect x="25" y="70" width="15" height="8" rx="2" fill="#C2B280" stroke="#8B5A2B"/>
+          <rect x="60" y="70" width="15" height="8" rx="2" fill="#C2B280" stroke="#8B5A2B"/>
+        </svg>`
+      },
+      hieroglyphs: {
+        title: "Geroglifici",
+        color: "#8B5A2B",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="15" width="60" height="70" rx="6" fill="#F4E8C1" stroke="#8B5A2B" stroke-width="3"/>
+          <circle cx="38" cy="32" r="6" stroke="#8B0000" stroke-width="2.5"/>
+          <path d="M58,28 L68,36 L58,40" stroke="#1034A6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M30,52 Q50,42 70,52" stroke="#8B5A2B" stroke-width="2.5" fill="none"/>
+          <path d="M35,68 L65,68 M50,60 L50,76" stroke="#006644" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>`
+      },
+      sarcophagus: {
+        title: "Sarcofago",
+        color: "#D4AF37",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M35,12 L65,12 L72,35 L62,88 L38,88 L28,35 Z" fill="#D4AF37" stroke="#8B6914" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="50" cy="26" r="10" fill="#F4E8C1" stroke="#1034A6" stroke-width="2"/>
+          <path d="M35,42 L65,42 M37,54 L63,54 M40,66 L60,66 M42,78 L58,78" stroke="#1034A6" stroke-width="2.5"/>
+          <circle cx="50" cy="48" r="3" fill="#8B0000"/>
+        </svg>`
+      },
+      papyrus: {
+        title: "Papiro",
+        color: "#20B2AA",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50,82 L50,45" stroke="#006644" stroke-width="4" stroke-linecap="round"/>
+          <path d="M50,45 C35,25 20,25 15,35 C25,40 38,42 50,45 Z" fill="#20B2AA" stroke="#006644" stroke-width="2"/>
+          <path d="M50,45 C65,25 80,25 85,35 C75,40 62,42 50,45 Z" fill="#20B2AA" stroke="#006644" stroke-width="2"/>
+          <path d="M50,45 C40,18 50,12 50,12 C50,12 60,18 50,45 Z" fill="#20B2AA" stroke="#006644" stroke-width="2"/>
+        </svg>`
+      },
+      scarab: {
+        title: "Scarabeo",
+        color: "#006644",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="50" cy="55" rx="22" ry="26" fill="#006644" stroke="#0B2068" stroke-width="3"/>
+          <circle cx="50" cy="26" r="10" fill="#D4AF37" stroke="#8B6914" stroke-width="2"/>
+          <line x1="50" y1="36" x2="50" y2="81" stroke="#D4AF37" stroke-width="2.5"/>
+          <line x1="28" y1="55" x2="72" y2="55" stroke="#D4AF37" stroke-width="2"/>
+          <path d="M28,45 Q15,40 18,30 M72,45 Q85,40 82,30" stroke="#006644" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28,65 Q12,70 15,82 M72,65 Q88,70 85,82" stroke="#006644" stroke-width="3" stroke-linecap="round"/>
+        </svg>`
+      },
+      nile: {
+        title: "Fiume Nilo",
+        color: "#1034A6",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10,35 Q30,20 50,35 T90,35" stroke="#20B2AA" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M10,52 Q30,37 50,52 T90,52" stroke="#1034A6" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M10,70 Q30,55 50,70 T90,70" stroke="#0B2068" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M30,52 L60,25 L60,52 Z" fill="#F4E8C1" stroke="#8B5A2B" stroke-width="2"/>
+        </svg>`
+      },
+      rosetta: {
+        title: "Stele di Rosetta",
+        color: "#333333",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22,18 C35,12 65,12 78,18 L82,85 L18,85 Z" fill="#333333" stroke="#1a1a1a" stroke-width="3"/>
+          <line x1="28" y1="30" x2="72" y2="30" stroke="#D4AF37" stroke-width="2"/>
+          <line x1="26" y1="40" x2="74" y2="40" stroke="#D4AF37" stroke-width="2"/>
+          <line x1="24" y1="52" x2="76" y2="52" stroke="#20B2AA" stroke-width="2"/>
+          <line x1="22" y1="64" x2="78" y2="64" stroke="#ffffff" stroke-width="2" opacity="0.8"/>
+          <line x1="20" y1="74" x2="80" y2="74" stroke="#ffffff" stroke-width="2" opacity="0.8"/>
+        </svg>`
+      },
+      anubis: {
+        title: "Anubi",
+        color: "#1A1A1A",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30,22 L42,42 L25,48 L45,58 L45,82 L55,82 L55,58 L80,48 L58,42 L70,22 L52,32 Z" fill="#1A1A1A" stroke="#D4AF37" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="60" cy="46" r="3" fill="#D4AF37"/>
+        </svg>`
+      },
+      tutankhamun: {
+        title: "Tutankhamon",
+        color: "#D4AF37",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25,30 Q50,10 75,30 L80,65 L20,65 Z" fill="#D4AF37" stroke="#1034A6" stroke-width="3"/>
+          <circle cx="50" cy="45" r="15" fill="#F4E8C1" stroke="#0B2068" stroke-width="2"/>
+          <path d="M25,30 L75,30 M22,42 L78,42 M20,54 L80,54" stroke="#1034A6" stroke-width="3"/>
+          <path d="M46,60 L54,60 L52,78 L48,78 Z" fill="#D4AF37" stroke="#0B2068" stroke-width="1.5"/>
+        </svg>`
+      },
+      abusimbel: {
+        title: "Abu Simbel",
+        color: "#B8860B",
+        svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="35" width="70" height="48" rx="4" fill="#D8C28A" stroke="#8B5A2B" stroke-width="3"/>
+          <path d="M10,35 L50,15 L90,35 Z" fill="#B8860B" stroke="#8B5A2B" stroke-width="2"/>
+          <rect x="22" y="45" width="10" height="25" rx="2" fill="#8B5A2B"/>
+          <rect x="38" y="45" width="10" height="25" rx="2" fill="#8B5A2B"/>
+          <rect x="52" y="45" width="10" height="25" rx="2" fill="#8B5A2B"/>
+          <rect x="68" y="45" width="10" height="25" rx="2" fill="#8B5A2B"/>
+        </svg>`
+      }
+    };
+
+    /* EGYPTIAN HISTORICAL DATABASE FOR ALL 5 LEVELS */
+    const HISTORICAL_DATA = {
+      // LEVEL 1: Visual SVG Graphic Identity Match
+      level1: [
+        { id: 'l1_1', title: 'Piramide', graphic: VECTOR_GRAPHICS.pyramid },
+        { id: 'l1_2', title: 'Faraone', graphic: VECTOR_GRAPHICS.pharaoh },
+        { id: 'l1_3', title: 'Sfinge', graphic: VECTOR_GRAPHICS.sphinx },
+        { id: 'l1_4', title: 'Geroglifici', graphic: VECTOR_GRAPHICS.hieroglyphs },
+        { id: 'l1_5', title: 'Sarcofago', graphic: VECTOR_GRAPHICS.sarcophagus },
+        { id: 'l1_6', title: 'Papiro', graphic: VECTOR_GRAPHICS.papyrus },
+        { id: 'l1_7', title: 'Scarabeo', graphic: VECTOR_GRAPHICS.scarab },
+        { id: 'l1_8', title: 'Fiume Nilo', graphic: VECTOR_GRAPHICS.nile },
+        { id: 'l1_9', title: 'Stele di Rosetta', graphic: VECTOR_GRAPHICS.rosetta },
+        { id: 'l1_10', title: 'Anubi', graphic: VECTOR_GRAPHICS.anubis }
+      ],
+
+      // LEVEL 2: SVG Graphic ➔ Descriptive Word (Multi-language support)
+      level2: [
+        { id: 'l2_1', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.pyramid, text: 'Piramide' }, b: { type: 'text', it: 'PIRAMIDE', en: 'PYRAMID', fr: 'PYRAMIDE' } },
+        { id: 'l2_2', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.pharaoh, text: 'Faraone' }, b: { type: 'text', it: 'FARAONE', en: 'PHARAOH', fr: 'PHARAON' } },
+        { id: 'l2_3', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.sphinx, text: 'Sfinge' }, b: { type: 'text', it: 'SFINGE', en: 'SPHINX', fr: 'SPHINX' } },
+        { id: 'l2_4', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.hieroglyphs, text: 'Geroglifici' }, b: { type: 'text', it: 'GEROGLIFICI', en: 'HIEROGLYPHS', fr: 'HIÉROGLYPHES' } },
+        { id: 'l2_5', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.sarcophagus, text: 'Sarcofago' }, b: { type: 'text', it: 'SARCOFAGO', en: 'SARCOPHAGUS', fr: 'SARCOPHAGE' } },
+        { id: 'l2_6', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.papyrus, text: 'Papiro' }, b: { type: 'text', it: 'PAPIRO', en: 'PAPYRUS', fr: 'PAPYRUS' } },
+        { id: 'l2_7', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.scarab, text: 'Scarabeo' }, b: { type: 'text', it: 'SCARABEO', en: 'SCARAB', fr: 'SCARABÉE' } },
+        { id: 'l2_8', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.nile, text: 'Fiume Nilo' }, b: { type: 'text', it: 'FIUME NILO', en: 'NILE RIVER', fr: 'FLEUVE NIL' } },
+        { id: 'l2_9', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.rosetta, text: 'Stele di Rosetta' }, b: { type: 'text', it: 'STELE DI ROSETTA', en: 'ROSETTA STONE', fr: 'PIERRE DE ROSETTE' } },
+        { id: 'l2_10', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.anubis, text: 'Anubi' }, b: { type: 'text', it: 'ANUBI', en: 'ANUBIS', fr: 'ANUBIS' } }
+      ],
+
+      // LEVEL 3: Character / Entity ➔ Famous Action or Symbol
+      level3: [
+        { id: 'l3_1', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.tutankhamun, text: 'Tutankhamon' }, b: { type: 'text', head: 'SCOPERTA STORICA', val: 'Maschera d\'oro e Tomba intatta scoperta nel 1922' } },
+        { id: 'l3_2', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.rosetta, text: 'Stele di Rosetta' }, b: { type: 'text', head: 'IMPRESA FAMOSA', val: 'Permise la decifrazione dei Geroglifici egizi' } },
+        { id: 'l3_3', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.pharaoh, text: 'Re Faraone' }, b: { type: 'text', head: 'RUOLO STORICO', val: 'Capo politico e religioso, considerato un dio in terra' } },
+        { id: 'l3_4', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.anubis, text: 'Dio Anubi' }, b: { type: 'text', head: 'SIMBOLO / RUOLO', val: 'Dio con testa di sciacallo, protettore della mummificazione' } },
+        { id: 'l3_5', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.pyramid, text: 'Piramide di Cheope' }, b: { type: 'text', head: 'OPERA MONUMENTALE', val: 'La più grande tomba reale monumentale dell\'Antico Egitto' } },
+        { id: 'l3_6', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.papyrus, text: 'Papiro Egizio' }, b: { type: 'text', head: 'INVENZIONE', val: 'Supporto di scrittura ricavato dalle piante del Nilo' } },
+        { id: 'l3_7', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.scarab, text: 'Scarabeo Sacro' }, b: { type: 'text', head: 'SIMBOLO SACRO', val: 'Amuleto portafortuna che simboleggia la rinascita e il Sole' } },
+        { id: 'l3_8', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.abusimbel, text: 'Ramses II' }, b: { type: 'text', head: 'IMPRESA MONUMENTALE', val: 'Fece costruire i grandiosi templi nella roccia ad Abu Simbel' } }
+      ],
+
+      // LEVEL 4: Historical Event ➔ Date / Period
+      level4: [
+        { id: 'l4_1', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.pharaoh, text: 'Unificazione dell\'Egitto' }, b: { type: 'text', head: 'DATA APPROSSIMATIVA', val: 'c. 3100 a.C. (Re Re Menes/Narmer)' } },
+        { id: 'l4_2', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.pyramid, text: 'Piramide di Cheope' }, b: { type: 'text', head: 'PERIODO STORICO', val: 'c. 2560 a.C. (Antico Regno)' } },
+        { id: 'l4_3', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.tutankhamun, text: 'Regno di Tutankhamon' }, b: { type: 'text', head: 'PERIODO STORICO', val: 'c. 1332 - 1323 a.C. (Nuovo Regno)' } },
+        { id: 'l4_4', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.rosetta, text: 'Ritrovamento Stele' }, b: { type: 'text', head: 'DATA MODERNA', val: '1799 d.C. (Spedizione Napoleonica)' } },
+        { id: 'l4_5', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.sphinx, text: 'Costruzione della Sfinge' }, b: { type: 'text', head: 'PERIODO STORICO', val: 'c. 2500 a.C. (Regno di Chefren)' } },
+        { id: 'l4_6', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.papyrus, text: 'Origine Scrittura' }, b: { type: 'text', head: 'PERIODO STORICO', val: 'c. 3000 a.C. (Inizio Scrittura Geroglifica)' } }
+      ],
+
+      // LEVEL 5: Concept / Cause ➔ Effect / Explanation
+      level5: [
+        { id: 'l5_1', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.nile, text: 'Inondazioni del Nilo' }, b: { type: 'text', head: 'CONSEGUENZA', val: 'Deposito del Limo fertile che rendeva ricca l\'agricoltura' } },
+        { id: 'l5_2', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.sarcophagus, text: 'Mummificazione' }, b: { type: 'text', head: 'SPIEGAZIONE', val: 'Preservazione del corpo per garantire la vita nell\'Oltretomba' } },
+        { id: 'l5_3', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.rosetta, text: 'Stele di Rosetta' }, b: { type: 'text', head: 'CONSEGUENZA', val: 'Apertura allo studio scientifico dell\'Egittologia moderna' } },
+        { id: 'l5_4', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.papyrus, text: 'Invenzione del Papiro' }, b: { type: 'text', head: 'CONSEGUENZA', val: 'Sviluppo dell\'amministrazione, delle tasse e della letteratura' } },
+        { id: 'l5_5', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.hieroglyphs, text: 'Scrittura Sacra' }, b: { type: 'text', head: 'SPIEGAZIONE', val: 'I geroglifici erano usati nei templi e nelle tombe per i riti' } },
+        { id: 'l5_6', a: { type: 'graphic', graphic: VECTOR_GRAPHICS.scarab, text: 'Amuleti e Scarabei' }, b: { type: 'text', head: 'SPIEGAZIONE', val: 'Protezione magica del cuore del defunto nel Giudizio di Osiride' } }
+      ]
+    };
+
+    /* APP CONFIGURATION & STATE */
+    let config = {
+      level: 2,
+      cardCount: 12,
+      gameMode: 'single', // 'single' or 'coop'
+      lang: 'it', // 'it', 'en', 'fr'
+      timerSeconds: 0,
+      theme: 'theme-tutankhamon',
+      shape: 'shape-rounded',
+      ttsEnabled: true,
+      soundEnabled: true,
+      dyslexiaMode: false
+    };
+
+    let gameState = {
+      cards: [],
+      flippedCards: [],
+      matchedPairs: 0,
+      moves: 0,
+      errors: 0,
+      activePlayer: 1,
+      p1Score: 0,
+      p2Score: 0,
+      timer: null,
+      timeElapsed: 0,
+      isProcessing: false
+    };
+
+    /* AUDIO SOUND EFFECTS (SYNTHESIZED WEB AUDIO) */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!config.soundEnabled) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'flip') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(500, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'match') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.linearRampToValueAtTime(120, now + 0.18);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+          osc.start(now);
+          osc.stop(now + 0.18);
+        } else if (type === 'win') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(554.37, now + 0.15);
+          osc.frequency.setValueAtTime(659.25, now + 0.3);
+          osc.frequency.setValueAtTime(880, now + 0.45);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.65);
+          osc.start(now);
+          osc.stop(now + 0.65);
+        }
+      } catch (e) {
+        console.log('Audio error:', e);
+      }
+    }
+
+    /* TEXT-TO-SPEECH (ACCESSIBILITY TTS) */
+    function speakText(text) {
+      if (!config.ttsEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = config.lang === 'en' ? 'en-US' : (config.lang === 'fr' ? 'fr-FR' : 'it-IT');
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleTTS() {
+      config.ttsEnabled = !config.ttsEnabled;
+      document.getElementById('ttsStatus').textContent = config.ttsEnabled ? 'ON' : 'OFF';
+      const btn = document.getElementById('ttsBtn');
+      if (config.ttsEnabled) {
+        btn.classList.remove('opacity-50');
+        speakText("Sintesi vocale attivata");
+      } else {
+        btn.classList.add('opacity-50');
+      }
+    }
+
+    function toggleDyslexiaFont() {
+      config.dyslexiaMode = !config.dyslexiaMode;
+      document.body.classList.toggle('font-dyslexia-mode', config.dyslexiaMode);
+      updateFeedback(config.dyslexiaMode ? "Carattere ad alta leggibilità attivato!" : "Carattere standard impostato.", "amber");
+    }
+
+    /* INITIALIZE GAME */
+    function initGame() {
+      clearInterval(gameState.timer);
+      
+      const pairsNeeded = config.cardCount / 2;
+      const levelKey = `level${config.level}`;
+      const pool = [...HISTORICAL_DATA[levelKey]];
+      
+      const selectedData = shuffleArray(pool).slice(0, pairsNeeded);
+
+      let deck = [];
+      selectedData.forEach((item, index) => {
+        if (config.level === 1) {
+          deck.push({ pairId: `p_${index}`, content: { type: 'graphic', graphic: item.graphic, text: item.title }, side: 'A' });
+          deck.push({ pairId: `p_${index}`, content: { type: 'graphic', graphic: item.graphic, text: item.title }, side: 'B' });
+        } else {
+          deck.push({ pairId: `p_${index}`, content: item.a, side: 'A' });
+          deck.push({ pairId: `p_${index}`, content: item.b, side: 'B' });
+        }
+      });
+
+      deck = shuffleArray(deck);
+
+      gameState = {
+        cards: deck,
+        flippedCards: [],
+        matchedPairs: 0,
+        moves: 0,
+        errors: 0,
+        activePlayer: 1,
+        p1Score: 0,
+        p2Score: 0,
+        timer: null,
+        timeElapsed: 0,
+        isProcessing: false
+      };
+
+      document.getElementById('movesCount').textContent = '0';
+      document.getElementById('pairsFound').textContent = '0';
+      document.getElementById('totalPairs').textContent = pairsNeeded;
+      
+      updateTurnDisplay();
+      updateLevelDisplay();
+      updateFeedback('Osserva le illustrazioni ed elementi dell\'Antico Egitto per memorizzare la loro posizione!', 'amber');
+
+      if (config.timerSeconds > 0) {
+        startTimer(config.timerSeconds);
+      } else {
+        document.getElementById('timerDisplay').textContent = 'Illimitato';
+      }
+
+      renderBoard();
+    }
+
+    /* RENDER BOARD */
+    function renderBoard() {
+      const board = document.getElementById('gameBoard');
+      board.innerHTML = '';
+
+      const count = config.cardCount;
+      if (count <= 8) {
+        board.className = "w-full grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto my-auto";
+      } else if (count <= 12) {
+        board.className = "w-full grid grid-cols-3 sm:grid-cols-4 gap-3 max-w-3xl mx-auto my-auto";
+      } else if (count <= 16) {
+        board.className = "w-full grid grid-cols-4 sm:grid-cols-4 gap-3 max-w-4xl mx-auto my-auto";
+      } else {
+        board.className = "w-full grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3 max-w-5xl mx-auto my-auto";
+      }
+
+      gameState.cards.forEach((card, index) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = `card perspective-1000 h-32 sm:h-40 w-full`;
+        cardEl.dataset.index = index;
+
+        const inner = document.createElement('div');
+        inner.className = `card-inner`;
+
+        // Card Back
+        const back = document.createElement('div');
+        back.className = `card-back ${config.theme} ${config.shape}`;
+        back.innerHTML = `
+          <div class="w-10 h-10 rounded-full border border-egypt-gold/50 flex items-center justify-center bg-black/20 mb-1">
+            <i class="fa-solid fa-eye text-egypt-gold text-lg"></i>
+          </div>
+          <span class="text-[10px] font-serif font-bold uppercase tracking-wider text-egypt-gold">EGITTO</span>
+        `;
+
+        // Card Front
+        const front = document.createElement('div');
+        front.className = `card-front ${config.shape}`;
+
+        let contentHTML = '';
+        const c = card.content;
+
+        if (c.type === 'graphic') {
+          contentHTML = `
+            <div class="svg-icon-art">
+              ${c.graphic.svg}
+            </div>
+            <span class="text-[11px] font-bold text-gray-800 mt-1 line-clamp-1 leading-tight text-center px-0.5">${c.text}</span>
+          `;
+        } else if (c.type === 'text') {
+          const headLabel = c.head ? `<span class="text-[9px] uppercase font-black text-egypt-darkLapis tracking-tight block mb-1">${c.head}</span>` : '';
+          const textVal = c[config.lang] || c.val;
+          
+          contentHTML = `
+            ${headLabel}
+            <span class="text-xs sm:text-sm font-bold text-gray-900 leading-tight px-1 text-center my-auto">${textVal}</span>
+          `;
+        }
+
+        front.innerHTML = contentHTML;
+
+        inner.appendChild(back);
+        inner.appendChild(front);
+        cardEl.appendChild(inner);
+
+        cardEl.addEventListener('click', () => handleCardClick(index, cardEl));
+        board.appendChild(cardEl);
+      });
+    }
+
+    /* CARD CLICK LOGIC */
+    function handleCardClick(index, cardEl) {
+      if (gameState.isProcessing) return;
+      if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+
+      cardEl.classList.add('flipped');
+      playSound('flip');
+
+      const card = gameState.cards[index];
+      
+      // Speak text for accessibility
+      let speechPhrase = "";
+      if (card.content.type === 'graphic') speechPhrase = card.content.text;
+      else if (card.content.type === 'text') speechPhrase = card.content[config.lang] || card.content.val;
+      speakText(speechPhrase);
+
+      gameState.flippedCards.push({ index, cardEl, card });
+
+      if (gameState.flippedCards.length === 2) {
+        gameState.moves++;
+        document.getElementById('movesCount').textContent = gameState.moves;
+        checkMatch();
+      }
+    }
+
+    function checkMatch() {
+      gameState.isProcessing = true;
+      const [c1, c2] = gameState.flippedCards;
+
+      if (c1.card.pairId === c2.card.pairId) {
+        // MATCH FOUND
+        setTimeout(() => {
+          c1.cardEl.classList.add('matched');
+          c2.cardEl.classList.add('matched');
+          playSound('match');
+
+          gameState.matchedPairs++;
+          document.getElementById('pairsFound').textContent = gameState.matchedPairs;
+
+          if (config.gameMode === 'coop') {
+            if (gameState.activePlayer === 1) gameState.p1Score++;
+            else gameState.p2Score++;
+            updateFeedback(`Coppia trovata! Giocatore ${gameState.activePlayer} guadagna un punto e gioca ancora!`, 'emerald');
+          } else {
+            const praises = [
+              "Eccellente! Coppia trovata con successo!",
+              "Bravissimo/a! Grande memoria visiva!",
+              "Ottima associazione storica!",
+              "Fantastico! Continua così!"
+            ];
+            updateFeedback(praises[Math.floor(Math.random() * praises.length)], 'emerald');
+          }
+
+          gameState.flippedCards = [];
+          gameState.isProcessing = false;
+
+          if (gameState.matchedPairs === config.cardCount / 2) {
+            handleGameWin();
+          }
+        }, 500);
+
+      } else {
+        // MISMATCH
+        gameState.errors++;
+        setTimeout(() => {
+          playSound('error');
+          c1.cardEl.classList.remove('flipped');
+          c2.cardEl.classList.remove('flipped');
+
+          if (config.gameMode === 'coop') {
+            gameState.activePlayer = gameState.activePlayer === 1 ? 2 : 1;
+            updateTurnDisplay();
+            updateFeedback(`Non era la coppia giusta. Passaggio del turno al Giocatore ${gameState.activePlayer}!`, 'amber');
+          } else {
+            const selfReg = [
+              "Nessun problema! Concentrati sulla posizione delle immagini.",
+              "Ottimo tentativo! Fai un bel respiro e riprova.",
+              "Osserva bene la griglia prima di girare la prossima carta."
+            ];
+            updateFeedback(selfReg[Math.floor(Math.random() * selfReg.length)], 'amber');
+          }
+
+          gameState.flippedCards = [];
+          gameState.isProcessing = false;
+        }, 1300);
+      }
+    }
+
+    /* TIMER */
+    function startTimer(seconds) {
+      let remaining = seconds;
+      updateTimerUI(remaining);
+
+      gameState.timer = setInterval(() => {
+        gameState.timeElapsed++;
+        remaining--;
+        updateTimerUI(remaining);
+
+        if (remaining <= 0) {
+          clearInterval(gameState.timer);
+          updateFeedback("Tempo scaduto! Fai una pausa e riprova!", "red");
+          gameState.isProcessing = true;
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI(sec) {
+      const display = document.getElementById('timerDisplay');
+      if (sec < 0) sec = 0;
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      display.textContent = `${m}:${s}`;
+    }
+
+    /* WIN & REPORT */
+    function handleGameWin() {
+      clearInterval(gameState.timer);
+      playSound('win');
+
+      const totalPairs = config.cardCount / 2;
+      const accuracy = Math.max(10, Math.round((totalPairs / gameState.moves) * 100));
+
+      document.getElementById('reportLevel').textContent = `Livello ${config.level}`;
+      document.getElementById('reportMoves').textContent = gameState.moves;
+      document.getElementById('reportTime').textContent = `${gameState.timeElapsed}s`;
+      document.getElementById('reportAccuracy').textContent = `${accuracy}%`;
+
+      if (config.gameMode === 'coop') {
+        document.getElementById('reportCoopScores').classList.remove('hidden');
+        document.getElementById('p1Score').textContent = gameState.p1Score;
+        document.getElementById('p2Score').textContent = gameState.p2Score;
+
+        let winMsg = "";
+        if (gameState.p1Score > gameState.p2Score) winMsg = "Vince il Giocatore 1!";
+        else if (gameState.p2Score > gameState.p1Score) winMsg = "Vince il Giocatore 2!";
+        else winMsg = "Pareggio Perfetto! Ottimo lavoro di squadra!";
+
+        document.getElementById('reportTitle').textContent = winMsg;
+        document.getElementById('reportSubtitle').textContent = "Grande spirito di cooperazione e rispetto dei turni!";
+      } else {
+        document.getElementById('reportCoopScores').classList.add('hidden');
+        document.getElementById('reportTitle').textContent = "Vittoria Faraonica!";
+        document.getElementById('reportSubtitle').textContent = "Hai completato il Memory con successo!";
+      }
+
+      openModal('reportModal');
+    }
+
+    /* HELPERS */
+    function updateTurnDisplay() {
+      const el = document.getElementById('playerTurnDisplay');
+      if (config.gameMode === 'coop') {
+        el.textContent = `Turno: Giocatore ${gameState.activePlayer}`;
+        el.className = gameState.activePlayer === 1 ? 'font-bold text-blue-800 text-xs sm:text-sm' : 'font-bold text-amber-800 text-xs sm:text-sm';
+      } else {
+        el.textContent = 'Giocatore Singolo';
+        el.className = 'font-bold text-egypt-darkLapis text-xs sm:text-sm';
+      }
+    }
+
+    function updateLevelDisplay() {
+      const el = document.getElementById('currentLevelDisplay');
+      const labels = [
+        "L1: Grafica - Grafica",
+        "L2: Grafica - Nome/Parola",
+        "L3: Oggetto - Azione/Simbolo",
+        "L4: Fatto - Data/Periodo",
+        "L5: Causa - Conseguenza"
+      ];
+      el.textContent = labels[config.level - 1] || "Livello 1";
+    }
+
+    function updateFeedback(msg, colorType) {
+      const banner = document.getElementById('feedbackBanner');
+      const text = document.getElementById('feedbackText');
+      text.textContent = msg;
+
+      banner.className = `w-full mb-3 p-3 text-center rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 shadow-sm flex items-center justify-center gap-2 `;
+
+      if (colorType === 'emerald') {
+        banner.classList.add('bg-emerald-100', 'text-emerald-900', 'border', 'border-emerald-300');
+      } else if (colorType === 'red') {
+        banner.classList.add('bg-red-100', 'text-red-900', 'border', 'border-red-300');
+      } else {
+        banner.classList.add('bg-amber-100', 'text-amber-900', 'border', 'border-amber-300');
+      }
+    }
+
+    function shuffleArray(arr) {
+      const array = [...arr];
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function applySettings(e) {
+      e.preventDefault();
+      config.level = parseInt(document.getElementById('settingLevel').value);
+      config.cardCount = parseInt(document.getElementById('settingCardCount').value);
+      config.gameMode = document.getElementById('settingGameMode').value;
+      config.lang = document.getElementById('settingLanguage').value;
+      config.timerSeconds = parseInt(document.getElementById('settingTimer').value);
+      config.theme = document.getElementById('settingTheme').value;
+      config.shape = document.getElementById('settingShape').value;
+
+      closeModal('settingsModal');
+      initGame();
+    }
+
+    function downloadHTML() {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Memory_Storico_Egizi_Grafico.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    window.onload = function() {
+      initGame();
+    };
+  </script>
+</body>
+</html>
