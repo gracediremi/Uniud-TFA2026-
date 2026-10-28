@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Storico - Laboratorio Didattico Interattivo</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lexend:wght@300;400;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Lexend', 'sans-serif'],
+            dyslexic: ['Atkinson Hyperlegible', 'sans-serif'],
+            serif: ['Cinzel', 'serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#0a3651',
+            },
+            history: {
+              gold: '#D4AF37',
+              bronze: '#CD7F32',
+              parchment: '#FDFBF7',
+              darkParchment: '#EFEAD8',
+              accentRed: '#991B1B',
+              accentPurple: '#5B21B6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Lexend', sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      min-height: 100vh;
+      color: #1e293b;
+      user-select: none;
+    }
+
+    /* Dyslexia Mode Font Class */
+    .font-dyslexia-mode {
+      font-family: 'Atkinson Hyperlegible', sans-serif !important;
+      letter-spacing: 0.04em !important;
+      word-spacing: 0.12em !important;
+      line-height: 1.6 !important;
+    }
+
+    /* 3D Card Mechanics */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      border: 3px solid;
+    }
+
+    /* Themes for Card Back */
+    .theme-egitti {
+      background: linear-gradient(135deg, #1034A6 0%, #0B2068 60%, #D4AF37 100%);
+      border-color: #D4AF37;
+      color: #D4AF37;
+    }
+    .theme-roma {
+      background: linear-gradient(135deg, #8B0000 0%, #4A0000 60%, #D4AF37 100%);
+      border-color: #D4AF37;
+      color: #F8FAF C;
+    }
+    .theme-medioevo {
+      background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+      border-color: #94A3B8;
+      color: #E2E8F0;
+    }
+    .theme-scoperte {
+      background: linear-gradient(135deg, #047857 0%, #064E3B 100%);
+      border-color: #34D399;
+      color: #A7F3D0;
+    }
+
+    /* Card Front Styling */
+    .card-front {
+      background-color: #ffffff;
+      color: #0f172a;
+      transform: rotateY(180deg);
+      border-color: #cbd5e1;
+    }
+    .matched .card-front {
+      border-color: #10B981 !important;
+      background-color: #F0FDF4 !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Shapes */
+    .shape-rounded { border-radius: 1rem; }
+    .shape-circle { border-radius: 9999px; }
+    .shape-octagon { clip-path: polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%); border-radius: 0; }
+
+    /* SVG Art Scaling */
+    .svg-art {
+      width: 100%;
+      height: 62%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .svg-art svg {
+      width: 100%;
+      height: 100%;
+      max-height: 85px;
+    }
+
+    /* Tab active indicator */
+    .tab-btn.active {
+      background-color: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- APP HEADER -->
+  <header class="bg-slate-900 text-white shadow-xl border-b-4 border-history-gold no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-history-gold flex items-center justify-center text-slate-900 font-black text-xl shadow-md">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <div>
+          <h1 class="font-serif text-lg sm:text-2xl font-black tracking-wider text-history-gold uppercase">Memory Storico</h1>
+          <p class="text-xs text-slate-300">Laboratorio Didattico di Memoria, Attenzione e Associazione Concettuale</p>
+        </div>
+      </div>
+
+      <!-- Global Controls -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleTTS()" id="ttsBtn" title="Sintesi Vocale Lettura Carte" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold border border-slate-700 text-amber-300 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-volume-high"></i> <span class="hidden sm:inline">Voce: <span id="ttsStatus">ON</span></span>
+        </button>
+        <button onclick="toggleDyslexiaFont()" title="Carattere Alta Leggibilità BES/DSA" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold border border-slate-700 text-cyan-300 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-font"></i> <span class="hidden sm:inline">Carattere BES/DSA</span>
+        </button>
+        <button onclick="downloadApp()" title="Scarica Applicazione Offline" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition flex items-center gap-1 shadow">
+          <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Salva App</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCHEDE DE DSHBOARD (NAVIGATION TABS) -->
+  <nav class="bg-white/90 backdrop-blur shadow-md sticky top-0 z-40 border-b border-slate-200 no-print">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 flex overflow-x-auto gap-1 py-2 no-scrollbar">
+      <button onclick="switchTab('descrizione')" id="tab-descrizione" class="tab-btn active px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2">
+        <i class="fa-solid fa-book-open"></i> 1. Descrizione e Prerequisiti
+      </button>
+      <button onclick="switchTab('obiettivi')" id="tab-obiettivi" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center gap-2">
+        <i class="fa-solid fa-bullseye"></i> 2. Obiettivi e Competenze
+      </button>
+      <button onclick="switchTab('livelli')" id="tab-livelli" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center gap-2">
+        <i class="fa-solid fa-layer-group"></i> 3. Livelli di Difficoltà
+      </button>
+      <button onclick="switchTab('modalita')" id="tab-modalita" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center gap-2">
+        <i class="fa-solid fa-sliders"></i> 4. Modalità e Opzioni
+      </button>
+      <button onclick="switchTab('gioco')" id="tab-gioco" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center gap-2 bg-amber-50 text-amber-900 border border-amber-200">
+        <i class="fa-solid fa-gamepad text-amber-600"></i> 5. GIOCO INTERATTIVO
+      </button>
+      <button onclick="switchTab('report')" id="tab-report" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center gap-2">
+        <i class="fa-solid fa-chart-line"></i> 6. Report e Autoregolazione
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER FOR ALL TABS -->
+  <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow">
+
+    <!-- ==================== SCHEDA 1: DESCRIZIONE E PREREQUISITI ==================== -->
+    <section id="section-descrizione" class="tab-content block space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-slate-200">
+        <div class="flex items-center gap-3 mb-4 border-b pb-3">
+          <div class="p-3 bg-sky-100 text-sky-700 rounded-xl text-2xl"><i class="fa-solid fa-book-open"></i></div>
+          <div>
+            <h2 class="text-xl font-bold font-serif text-slate-900">Descrizione dell'Esercizio e Prerequisiti</h2>
+            <p class="text-xs text-slate-500">Struttura base del Memory Storico Didattico e requisiti minimi di accesso</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Game Mechanics -->
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-clone text-amber-500"></i> Cos'è il Memory Storico?
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Il gioco è composto da un mazzo di tessere. Ogni tessera ha un'<strong>immagine</strong>, una <strong>parola</strong> o un <strong>concetto storico</strong> stampato su un lato. 
+              Ogni elemento è presente esattamente in <strong>due tessere</strong> (formando così una coppia di associazione).
+            </p>
+            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900">
+              <strong class="block mb-1"><i class="fa-solid fa-flag-checkered"></i> Obiettivo del Gioco:</strong>
+              Trovare il maggior numero di coppie di tessere uguali o corrispondenti ricordando la loro posizione visivo-spaziale sul tavolo da gioco.
+            </div>
+          </div>
+
+          <!-- Prerequisites -->
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-emerald-500"></i> Prerequisiti Richiesti
+            </h3>
+            <ul class="space-y-2 text-xs sm:text-sm text-slate-700">
+              <li class="flex items-start gap-2.5 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <i class="fa-solid fa-landmark text-amber-600 mt-1"></i>
+                <div>
+                  <strong>Conoscenza generale del periodo storico:</strong>
+                  <span class="block text-xs text-slate-500">Familiarità basilare con i simboli, personaggi o concetti trattati (es. Antico Egitto, Roma, Medioevo, Scoperte).</span>
+                </div>
+              </li>
+              <li class="flex items-start gap-2.5 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <i class="fa-solid fa-font text-sky-600 mt-1"></i>
+                <div>
+                  <strong>Saper Leggere:</strong>
+                  <span class="block text-xs text-slate-500">Capacità di decodifica delle parole chiave nei livelli intermedi e avanzati (con supporto della sintesi vocale TTS per BES/DSA).</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-sky-50 rounded-2xl border border-sky-200 flex flex-wrap justify-between items-center gap-3">
+          <div class="text-xs sm:text-sm text-sky-900">
+            <strong>Pronto per iniziare?</strong> Configura le opzioni o prova subito il gioco interactivo!
+          </div>
+          <button onclick="switchTab('gioco')" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-gamepad"></i> Vai al Gioco Interattivo
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCHEDA 2: OBIETTIVI E COMPETENZE ==================== -->
+    <section id="section-obiettivi" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-slate-200">
+        <div class="flex items-center gap-3 mb-4 border-b pb-3">
+          <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl text-2xl"><i class="fa-solid fa-bullseye"></i></div>
+          <div>
+            <h2 class="text-xl font-bold font-serif text-slate-900">Obiettivi Didattici e Competenze Chiave</h2>
+            <p class="text-xs text-slate-500">Mappatura cognitiva ed esecutiva delle funzioni sollecitate dal Memory Storico</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Primary Objectives -->
+          <div class="border-2 border-emerald-200 bg-emerald-50/50 rounded-2xl p-5 space-y-3">
+            <h3 class="font-bold text-emerald-900 text-base flex items-center gap-2 border-b border-emerald-200 pb-2">
+              <i class="fa-solid fa-star text-emerald-600"></i> Obiettivi Primari Cognitivi
+            </h3>
+            <ul class="space-y-2 text-xs sm:text-sm text-slate-700">
+              <li class="bg-white p-3 rounded-xl border border-emerald-100 shadow-sm">
+                <strong class="text-emerald-900 block"><i class="fa-solid fa-memory text-emerald-600"></i> Aumentare la Memoria di Lavoro (WM):</strong>
+                Mantenere attiva in memoria la posizione e l'identità delle tessere non ancora abbinate.
+              </li>
+              <li class="bg-white p-3 rounded-xl border border-emerald-100 shadow-sm">
+                <strong class="text-emerald-900 block"><i class="fa-solid fa-eye text-emerald-600"></i> Attenzione Visivo-Spaziale:</strong>
+                Scansione visiva sistematica della griglia e orientamento nello spazio del tavolo da gioco.
+              </li>
+              <li class="bg-white p-3 rounded-xl border border-emerald-100 shadow-sm">
+                <strong class="text-emerald-900 block"><i class="fa-solid fa-spell-check text-emerald-600"></i> Aumento del Lessico Storico:</strong>
+                Acquisizione di termini specifici, nomi di personaggi, concetti e vocaboli stranieri.
+              </li>
+              <li class="bg-white p-3 rounded-xl border border-emerald-100 shadow-sm">
+                <strong class="text-emerald-900 block"><i class="fa-solid fa-diagram-project text-emerald-600"></i> Associazioni Mentali delle Rappresentazioni:</strong>
+                Collegamento tra icona visiva, parola scritta, causa e conseguenza storica.
+              </li>
+            </ul>
+          </div>
+
+          <!-- Secondary Objectives & Competencies -->
+          <div class="border-2 border-indigo-200 bg-indigo-50/50 rounded-2xl p-5 space-y-3">
+            <h3 class="font-bold text-indigo-900 text-base flex items-center gap-2 border-b border-indigo-200 pb-2">
+              <i class="fa-solid fa-users text-indigo-600"></i> Obiettivi Secondari & Socio-Emotivi
+            </h3>
+            <ul class="space-y-2 text-xs sm:text-sm text-slate-700">
+              <li class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                <strong class="text-indigo-900 block"><i class="fa-solid fa-handshake text-indigo-600"></i> Cooperazione e Turnazione:</strong>
+                Rispettare i tempi dell'altro nella modalità a 2 giocatori, condividendo le strategie visive.
+              </li>
+              <li class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                <strong class="text-indigo-900 block"><i class="fa-solid fa-face-smile-beam text-indigo-600"></i> Autoregolazione Emotiva:</strong>
+                Gestione della frustrazione in caso di errore nel trovare la coppia e controllo dell'impulsività.
+              </li>
+              <li class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                <strong class="text-indigo-900 block"><i class="fa-solid fa-hand-pointer text-indigo-600"></i> Coordinazione Oculo-Manuale:</strong>
+                Precisione nell'indicare e selezionare visivamente la tessera desiderata.
+              </li>
+            </ul>
+
+            <div class="p-3 bg-white rounded-xl border border-indigo-200 text-xs text-indigo-900 font-bold mt-2">
+              <i class="fa-solid fa-award text-amber-500"></i> Competenze Chiave: Memoria di lavoro, attenzione sostenuta, associazione concettuale e autoregolazione.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCHEDA 3: LIVELLI DI DIFFICOLTÀ ==================== -->
+    <section id="section-livelli" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-slate-200">
+        <div class="flex items-center gap-3 mb-4 border-b pb-3">
+          <div class="p-3 bg-amber-100 text-amber-700 rounded-xl text-2xl"><i class="fa-solid fa-layer-group"></i></div>
+          <div>
+            <h2 class="text-xl font-bold font-serif text-slate-900">I 5 Livelli di Progressione Didattica</h2>
+            <p class="text-xs text-slate-500">Dal più facile al più difficile: percorso graduato per la gestione del carico cognitivo</p>
+          </div>
+        </div>
+
+        <div class="grid gap-4">
+
+          <!-- Level 1 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-amber-400 transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 bg-amber-500 text-white text-xs font-black rounded-lg">LIVELLO 1</span>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Memory Identità Immagine ➔ Immagine</h3>
+              </div>
+              <p class="text-xs text-slate-600">Abbinamento visivo diretto di due illustrazioni identicali. Carico cognitivo minimo per avvio e supporto BES/DSA.</p>
+            </div>
+            <button onclick="selectLevelAndPlay(1)" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition shadow whitespace-nowrap">
+              <i class="fa-solid fa-play"></i> Prova Livello 1
+            </button>
+          </div>
+
+          <!-- Level 2 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-sky-400 transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 bg-sky-500 text-white text-xs font-black rounded-lg">LIVELLO 2</span>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Memory Immagine ➔ Parola che descrive</h3>
+              </div>
+              <p class="text-xs text-slate-600">Es. Foto/Illustrazione della Piramide ➔ Parola scritta PIRAMIDE (anche in lingua straniera). Numero ridotto di tessere (10-12).</p>
+            </div>
+            <button onclick="selectLevelAndPlay(2)" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition shadow whitespace-nowrap">
+              <i class="fa-solid fa-play"></i> Prova Livello 2
+            </button>
+          </div>
+
+          <!-- Level 3 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-indigo-400 transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 bg-indigo-500 text-white text-xs font-black rounded-lg">LIVELLO 3</span>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Nome Personaggio / Oggetto ➔ Azione Famosa o Simbolo</h3>
+              </div>
+              <p class="text-xs text-slate-600">Es. Cristoforo Colombo ➔ Scoperta dell'America (1492) / Tutankhamon ➔ Maschera d'Oro. Collegamento del "Chi" al "Cosa ha fatto".</p>
+            </div>
+            <button onclick="selectLevelAndPlay(3)" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs rounded-xl transition shadow whitespace-nowrap">
+              <i class="fa-solid fa-play"></i> Prova Livello 3
+            </button>
+          </div>
+
+          <!-- Level 4 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-purple-400 transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 bg-purple-500 text-white text-xs font-black rounded-lg">LIVELLO 4</span>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Fatto Storico ➔ Data / Collocazione Temporale</h3>
+              </div>
+              <p class="text-xs text-slate-600">Es. Caduta dell'Impero Romano d'Occidente ➔ 476 d.C. Stimola l'orientamento temporale e la cronologia storica.</p>
+            </div>
+            <button onclick="selectLevelAndPlay(4)" class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-bold text-xs rounded-xl transition shadow whitespace-nowrap">
+              <i class="fa-solid fa-play"></i> Prova Livello 4
+            </button>
+          </div>
+
+          <!-- Level 5 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-emerald-400 transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 bg-emerald-600 text-white text-xs font-black rounded-lg">LIVELLO 5</span>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base">Termine Storico / Causa ➔ Spiegazione / Conseguenza</h3>
+              </div>
+              <p class="text-xs text-slate-600">Es. Inondazioni del Nilo ➔ Limo Fertile e prosperità agricola. Associazione logica complessa causa-effetto.</p>
+            </div>
+            <button onclick="selectLevelAndPlay(5)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow whitespace-nowrap">
+              <i class="fa-solid fa-play"></i> Prova Livello 5
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCHEDA 4: MODALITÀ E PERSONALIZZAZIONE ==================== -->
+    <section id="section-modalita" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-slate-200">
+        <div class="flex items-center gap-3 mb-4 border-b pb-3">
+          <div class="p-3 bg-purple-100 text-purple-700 rounded-xl text-2xl"><i class="fa-solid fa-sliders"></i></div>
+          <div>
+            <h2 class="text-xl font-bold font-serif text-slate-900">Modalità di Gioco e Personalizzazione</h2>
+            <p class="text-xs text-slate-500">Adatta l'esperienza di apprendimento alle esigenze specifiche dell'alunno o della classe</p>
+          </div>
+        </div>
+
+        <form id="optionsForm" onsubmit="saveOptionsAndPlay(event)" class="grid md:grid-cols-2 gap-6">
+
+          <!-- Option 1: Period Theme -->
+          <div class="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block font-bold text-slate-800 text-xs sm:text-sm">
+              <i class="fa-solid fa-landmark text-amber-600"></i> Periodo Storico / Ambientazione:
+            </label>
+            <select id="optTheme" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-sky-500">
+              <option value="egitti" selected>Antico Egitto (Pirame, Faraoni, Nilo, Geroglifici)</option>
+              <option value="roma">Antica Roma (Colosseo, Giulio Cesare, Legione, Senato)</option>
+              <option value="medioevo">Medioevo (Castello, Cavaliere, Amuleto, Peste)</option>
+              <option value="scoperte">Grandi Scoperte (Caravella, Colombo, Bussola, Astrolabio)</option>
+            </select>
+            <p class="text-[11px] text-slate-500">Cambia la grafica vettoriale e i contenuti storici del Memory.</p>
+          </div>
+
+          <!-- Option 2: Number of Cards -->
+          <div class="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block font-bold text-slate-800 text-xs sm:text-sm">
+              <i class="fa-solid fa-layer-group text-sky-600"></i> Numero di Tessere (Carico Cognitivo):
+            </label>
+            <select id="optCardCount" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-sky-500">
+              <option value="6">6 Tessere (3 Coppie - Carico Minimo / Avvio)</option>
+              <option value="8">8 Tessere (4 Coppie - Supporto BES/DSA)</option>
+              <option value="12" selected>12 Tessere (6 Coppie - Consigliato Livello 2)</option>
+              <option value="16">16 Tessere (8 Coppie - Intermedio)</option>
+              <option value="20">20 Tessere (10 Coppie - Sfida)</option>
+            </select>
+            <p class="text-[11px] text-slate-500">Iniziare con meno carte per favorire la memorizzazione immediata.</p>
+          </div>
+
+          <!-- Option 3: Card Shapes & Colors -->
+          <div class="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block font-bold text-slate-800 text-xs sm:text-sm">
+              <i class="fa-solid fa-shapes text-indigo-600"></i> Forma delle Tessere:
+            </label>
+            <select id="optShape" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-sky-500">
+              <option value="shape-rounded" selected>Rettangolare Arrotondata (Standard)</option>
+              <option value="shape-circle">Circolare (Medaglione)</option>
+              <option value="shape-octagon">Ottagonale</option>
+            </select>
+            <p class="text-[11px] text-slate-500">Personalizza la percezione visiva e spaziale.</p>
+          </div>
+
+          <!-- Option 4: Foreign Language -->
+          <div class="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block font-bold text-slate-800 text-xs sm:text-sm">
+              <i class="fa-solid fa-language text-emerald-600"></i> Lingua Straniera Vocabolario (Livello 2):
+            </label>
+            <select id="optLang" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-sky-500">
+              <option value="it" selected>Italiano (Standard)</option>
+              <option value="en">Inglese (English)</option>
+              <option value="fr">Francese (Français)</option>
+              <option value="es">Spagnolo (Español)</option>
+              <option value="de">Tedesco (Deutsch)</option>
+            </select>
+            <p class="text-[11px] text-slate-500">Collega le immagini a parole in lingua straniera per l'aumento del lessico CLIL.</p>
+          </div>
+
+          <!-- Option 5: Timer Limits -->
+          <div class="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block font-bold text-slate-800 text-xs sm:text-sm">
+              <i class="fa-solid fa-stopwatch text-rose-600"></i> Tempo Prestabilito (Timer):
+            </label>
+            <select id="optTimer" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-sky-500">
+              <option value="0" selected>Disattivato (Nessuna ansia temporale)</option>
+              <option value="45">45 Secondi</option>
+              <option value="60">60 Secondi</option>
+              <option value="90">90 Secondi</option>
+              <option value="120">120 Secondi</option>
+            </select>
+            <p class="text-[11px] text-slate-500">Da utilizzare con cautela per stimolare la velocità di elaborazione.</p>
+          </div>
+
+          <!-- Option 6: Game Mode (Coop / Single) -->
+          <div class="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block font-bold text-slate-800 text-xs sm:text-sm">
+              <i class="fa-solid fa-users-gear text-amber-600"></i> Modalità di Gioco:
+            </label>
+            <select id="optGameMode" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-sky-500">
+              <option value="single" selected>Giocatore Singolo (Autoregolazione)</option>
+              <option value="coop">Cooperativa a Turni (2 Giocatori)</option>
+            </select>
+            <p class="text-[11px] text-slate-500">Lavora sulla turnazione e cooperazione tra pari.</p>
+          </div>
+
+          <div class="md:col-span-2 flex justify-end gap-3 pt-4 border-t">
+            <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-circle-check"></i> Salva Impostazioni e Gioca
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- ==================== SCHEDA 5: GIOCO INTERATTIVO ==================== -->
+    <section id="section-gioco" class="tab-content hidden space-y-4">
+      
+      <!-- GAME STATUS DASHBOARD -->
+      <div class="bg-white rounded-2xl p-4 shadow-lg border-2 border-amber-300/60 no-print">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-center text-center">
+          
+          <!-- Mode/Turn -->
+          <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200 col-span-2 md:col-span-1">
+            <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Modalità / Turno</div>
+            <div id="displayTurn" class="font-black text-slate-800 text-xs sm:text-sm truncate">Giocatore Singolo</div>
+          </div>
+
+          <!-- Level -->
+          <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+            <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Livello Didattico</div>
+            <div id="displayLevel" class="font-black text-slate-800 text-xs sm:text-sm truncate">L2: Grafica - Parola</div>
+          </div>
+
+          <!-- Score -->
+          <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+            <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Coppie / Mosse</div>
+            <div class="font-black text-slate-800 text-xs sm:text-base"><span id="pairsFound">0</span>/<span id="totalPairs">6</span> | <span id="movesCount" class="text-amber-700">0</span></div>
+          </div>
+
+          <!-- Timer -->
+          <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+            <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Tempo Rimanente</div>
+            <div id="displayTimer" class="font-black text-slate-800 text-xs sm:text-base">Illimitato</div>
+          </div>
+
+          <!-- Restart Button -->
+          <div class="col-span-2 md:col-span-1">
+            <button onclick="initGame()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-rotate-right"></i> Riavvia Partita
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FEEDBACK & SELF-REGULATION BANNER -->
+      <div id="gameBanner" class="p-3.5 rounded-xl text-center font-bold text-xs sm:text-sm bg-sky-100 text-sky-900 border border-sky-300 shadow-sm flex items-center justify-center gap-2">
+        <i class="fa-solid fa-brain text-sky-600 text-base"></i>
+        <span id="bannerText">Osserva le tessere e memorizza la loro posizione per formare le coppie!</span>
+      </div>
+
+      <!-- MEMORY GAME GRID -->
+      <div id="gameGrid" class="w-full grid gap-3 my-2 justify-center items-center py-2">
+        <!-- Rendered dynamically -->
+      </div>
+
+    </section>
+
+    <!-- ==================== SCHEDA 6: REPORT E AUTOREGOLAZIONE ==================== -->
+    <section id="section-report" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-slate-200">
+        <div class="flex items-center gap-3 mb-4 border-b pb-3">
+          <div class="p-3 bg-rose-100 text-rose-700 rounded-xl text-2xl"><i class="fa-solid fa-chart-line"></i></div>
+          <div>
+            <h2 class="text-xl font-bold font-serif text-slate-900">Report Diagnostico & Gestione dell'Errore</h2>
+            <p class="text-xs text-slate-500">Monitoraggio dell'autoregolazione, accuratezza e riscontro per docenti/educatori</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+          <!-- Performance Summary -->
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+            <h3 class="font-bold text-slate-800 text-sm sm:text-base border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-clipboard-check text-sky-600"></i> Ultimo Risultato Esercizio
+            </h3>
+            
+            <div class="space-y-2 text-xs sm:text-sm text-slate-700">
+              <div class="flex justify-between p-2 bg-white rounded-lg border">
+                <span>Livello Affrontato:</span>
+                <strong id="repLevel" class="text-sky-700">Livello 2</strong>
+              </div>
+              <div class="flex justify-between p-2 bg-white rounded-lg border">
+                <span>Numero Mosse Totali:</span>
+                <strong id="repMoves" class="text-slate-900">0</strong>
+              </div>
+              <div class="flex justify-between p-2 bg-white rounded-lg border">
+                <span>Tempo Impiegato:</span>
+                <strong id="repTime" class="text-slate-900">0s</strong>
+              </div>
+              <div class="flex justify-between p-2 bg-white rounded-lg border">
+                <span>Accuratezza Memoria Visiva:</span>
+                <strong id="repAccuracy" class="text-emerald-600">100%</strong>
+              </div>
+            </div>
+
+            <button onclick="window.print()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 no-print">
+              <i class="fa-solid fa-print"></i> Stampa Scheda Report Per Insegnante
+            </button>
+          </div>
+
+          <!-- Self Regulation & Error Handling Strategy -->
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+            <h3 class="font-bold text-slate-800 text-sm sm:text-base border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-heart-pulse text-rose-500"></i> Autoregolazione & Strategia dell'Errore
+            </h3>
+            
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Nel Memory Storico l'errore non è una punizione, ma una <strong>fonte di informazione visivo-spaziale</strong> essenziale per la seconda fase del turno.
+            </p>
+
+            <div class="p-3 bg-rose-50 rounded-xl border border-rose-200 text-xs text-rose-900 space-y-1">
+              <strong><i class="fa-solid fa-lightbulb"></i> Strategia di Autoregolazione Suggerita:</strong>
+              <p>Se l'alunno non trova la coppia, viene invitato a ripetere a voce alta il nome dell'oggetto e fare un bel respiro prima di girare la carta successiva.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-4 text-center border-t border-slate-800 no-print">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div>Memory Storico Didattico &copy; Laboratorio Inclusivo BES / DSA</div>
+      <div class="flex gap-4">
+        <button onclick="switchTab('descrizione')" class="hover:text-white underline">Descrizione</button>
+        <button onclick="switchTab('gioco')" class="hover:text-white underline">Gioca Ora</button>
+        <button onclick="downloadApp()" class="hover:text-white underline">Salva Offline</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT APP LOGIC ==================== -->
+  <script>
+    /* GRAPHICS DATABASE FOR ALL PERIODS (CLEAN SVG VECTORS) */
+    const VECTOR_DATABASE = {
+      egitti: {
+        pyramid: { title: "Piramide", svg: `<svg viewBox="0 0 100 100"><polygon points="50,12 10,82 90,82" fill="#F4C430" stroke="#997A15" stroke-width="3"/><polygon points="50,12 50,82 90,82" fill="#D4AF37" opacity="0.8"/><line x1="50" y1="12" x2="50" y2="82" stroke="#8B6914" stroke-width="2"/></svg>` },
+        pharaoh: { title: "Faraone", svg: `<svg viewBox="0 0 100 100"><path d="M25,85 L25,45 C25,25 35,15 50,15 C65,15 75,25 75,45 L75,85 Z" fill="#1034A6" stroke="#0B2068" stroke-width="3"/><circle cx="50" cy="38" r="14" fill="#F4E8C1"/></svg>` },
+        sphinx: { title: "Sfinge", svg: `<svg viewBox="0 0 100 100"><path d="M15,78 L85,78 L80,55 L65,50 L55,30 L45,30 L35,50 L20,55 Z" fill="#D8C28A" stroke="#8B5A2B" stroke-width="3"/><circle cx="50" cy="32" r="11" fill="#E8D7B0"/></svg>` },
+        hieroglyphs: { title: "Geroglifici", svg: `<svg viewBox="0 0 100 100"><rect x="20" y="15" width="60" height="70" rx="6" fill="#F4E8C1" stroke="#8B5A2B" stroke-width="3"/><circle cx="38" cy="32" r="6" stroke="#8B0000" stroke-width="2.5"/><path d="M30,52 Q50,42 70,52" stroke="#8B5A2B" stroke-width="2.5" fill="none"/></svg>` },
+        sarcophagus: { title: "Sarcofago", svg: `<svg viewBox="0 0 100 100"><path d="M35,12 L65,12 L72,35 L62,88 L38,88 L28,35 Z" fill="#D4AF37" stroke="#8B6914" stroke-width="3"/><circle cx="50" cy="26" r="10" fill="#F4E8C1"/></svg>` },
+        papyrus: { title: "Papiro", svg: `<svg viewBox="0 0 100 100"><path d="M50,82 L50,45" stroke="#006644" stroke-width="4"/><path d="M50,45 C35,25 20,25 15,35 C25,40 38,42 50,45 Z" fill="#20B2AA" stroke="#006644" stroke-width="2"/></svg>` },
+        scarab: { title: "Scarabeo", svg: `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="22" ry="26" fill="#006644" stroke="#0B2068" stroke-width="3"/><circle cx="50" cy="26" r="10" fill="#D4AF37"/></svg>` },
+        nile: { title: "Fiume Nilo", svg: `<svg viewBox="0 0 100 100"><path d="M10,35 Q30,20 50,35 T90,35" stroke="#20B2AA" stroke-width="4" fill="none"/><path d="M10,52 Q30,37 50,52 T90,52" stroke="#1034A6" stroke-width="5" fill="none"/></svg>` },
+        rosetta: { title: "Stele di Rosetta", svg: `<svg viewBox="0 0 100 100"><path d="M22,18 C35,12 65,12 78,18 L82,85 L18,85 Z" fill="#333333" stroke="#1a1a1a" stroke-width="3"/><line x1="28" y1="30" x2="72" y2="30" stroke="#D4AF37" stroke-width="2"/></svg>` },
+        anubis: { title: "Anubi", svg: `<svg viewBox="0 0 100 100"><path d="M30,22 L42,42 L25,48 L45,58 L45,82 L55,82 L55,58 L80,48 L58,42 L70,22 L52,32 Z" fill="#1A1A1A" stroke="#D4AF37" stroke-width="2.5"/></svg>` }
+      },
+      roma: {
+        colosseum: { title: "Colosseo", svg: `<svg viewBox="0 0 100 100"><rect x="15" y="35" width="70" height="45" rx="6" fill="#D8C28A" stroke="#8B5A2B" stroke-width="3"/><path d="M25,45 h10 v20 h-10 Z M45,45 h10 v20 h-10 Z M65,45 h10 v20 h-10 Z" fill="#4A0000"/></svg>` },
+        caesar: { title: "Giulio Cesare", svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="22" fill="#F4E8C1" stroke="#8B0000" stroke-width="3"/><path d="M30,30 Q50,15 70,30" stroke="#006644" stroke-width="4" fill="none"/></svg>` },
+        gladiator: { title: "Elmo Gladiatore", svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#CD7F32" stroke="#4A0000" stroke-width="3"/><path d="M50,15 L50,50" stroke="#8B0000" stroke-width="6"/></svg>` },
+        aqueduct: { title: "Acquedotto", svg: `<svg viewBox="0 0 100 100"><rect x="10" y="30" width="80" height="15" fill="#D8C28A"/><path d="M15,45 v35 M35,45 v35 M55,45 v35 M75,45 v35" stroke="#8B5A2B" stroke-width="4"/></svg>` }
+      },
+      medioevo: {
+        castle: { title: "Castello", svg: `<svg viewBox="0 0 100 100"><rect x="20" y="40" width="60" height="45" fill="#94A3B8" stroke="#1E293B" stroke-width="3"/><path d="M20,40 L20,25 L32,25 L32,40 L44,40 L44,25 L56,25 L56,40 L68,40 L68,25 L80,25 L80,40 Z" fill="#64748B"/></svg>` },
+        knight: { title: "Cavaliere", svg: `<svg viewBox="0 0 100 100"><path d="M30,30 L70,30 L60,80 L40,80 Z" fill="#CBD5E1" stroke="#0F172A" stroke-width="3"/><line x1="50" y1="35" x2="50" y2="75" stroke="#991B1B" stroke-width="4"/></svg>` },
+        crown: { title: "Corona Reale", svg: `<svg viewBox="0 0 100 100"><path d="M15,70 L20,30 L40,50 L50,20 L60,50 L80,30 L85,70 Z" fill="#D4AF37" stroke="#8B6914" stroke-width="3"/></svg>` }
+      },
+      scoperte: {
+        ship: { title: "Caravella", svg: `<svg viewBox="0 0 100 100"><path d="M15,60 L85,60 L75,85 L25,85 Z" fill="#8B5A2B" stroke="#4A2810" stroke-width="3"/><path d="M50,20 L50,60 L80,40 Z" fill="#F4E8C1" stroke="#991B1B" stroke-width="2"/></svg>` },
+        compass: { title: "Bussola", svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" fill="#F4E8C1" stroke="#047857" stroke-width="4"/><polygon points="50,22 58,50 50,45 42,50" fill="#991B1B"/><polygon points="50,78 58,50 50,55 42,50" fill="#1E293B"/></svg>` },
+        astrolabe: { title: "Astrolabio", svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="#D4AF37" stroke-width="4"/><line x1="20" y1="50" x2="80" y2="50" stroke="#D4AF37" stroke-width="3"/><line x1="50" y1="20" x2="50" y2="80" stroke="#D4AF37" stroke-width="3"/></svg>` }
+      }
+    };
+
+    /* TRANSLATION DICTIONARY FOR FOREIGN LANGUAGES (LEVEL 2) */
+    const DICTIONARY = {
+      "Piramide": { it: "PIRAMIDE", en: "PYRAMID", fr: "PYRAMIDE", es: "PIRÁMIDE", de: "PYRAMIDE" },
+      "Faraone": { it: "FARAONE", en: "PHARAOH", fr: "PHARAON", es: "FARAÓN", de: "PHARAO" },
+      "Sfinge": { it: "SFINGE", en: "SPHINX", fr: "SPHINX", es: "ESFINGE", de: "SPHINX" },
+      "Geroglifici": { it: "GEROGLIFICI", en: "HIEROGLYPHS", fr: "HIÉROGLYPHES", es: "JEROGLÍFICOS", de: "HIEROGLYPHEN" },
+      "Sarcofago": { it: "SARCOFAGO", en: "SARCOPHAGUS", fr: "SARCOPHAGE", es: "SARCÓFAGO", de: "SARKOPHAG" },
+      "Papiro": { it: "PAPIRO", en: "PAPYRUS", fr: "PAPYRUS", es: "PAPIRO", de: "PAPYRUS" },
+      "Scarabeo": { it: "SCARABEO", en: "SCARAB", fr: "SCARABÉE", es: "ESCARABAJO", de: "SKARABÄUS" },
+      "Fiume Nilo": { it: "FIUME NILO", en: "NILE RIVER", fr: "FLEUVE NIL", es: "RÍO NILO", de: "NILFLUSS" },
+      "Colosseo": { it: "COLOSSEO", en: "COLOSSEUM", fr: "COLISÉE", es: "COLISEO", de: "KOLOSSEUM" },
+      "Castello": { it: "CASTELLO", en: "CASTLE", fr: "CHÂTEAU", es: "CASTILLO", de: "SCHLOSS" },
+      "Caravella": { it: "CARAVELLA", en: "CARAVEL", fr: "CARAVELLE", es: "CARABELA", de: "KARAVELLE" }
+    };
+
+    /* CONFIGURATION & STATE */
+    let config = {
+      level: 2,
+      cardCount: 12,
+      gameMode: 'single',
+      lang: 'it',
+      timerSeconds: 0,
+      theme: 'egitti',
+      shape: 'shape-rounded',
+      ttsEnabled: true,
+      soundEnabled: true,
+      dyslexiaMode: false
+    };
+
+    let gameState = {
+      cards: [],
+      flippedCards: [],
+      matchedPairs: 0,
+      moves: 0,
+      activePlayer: 1,
+      p1Score: 0,
+      p2Score: 0,
+      timer: null,
+      timeElapsed: 0,
+      isProcessing: false
+    };
+
+    /* TAB SWITCHING SYSTEM */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const activeSec = document.getElementById(`section-${tabId}`);
+      if (activeSec) activeSec.classList.remove('hidden');
+
+      if (tabId === 'gioco' && gameState.cards.length === 0) {
+        initGame();
+      }
+    }
+
+    function selectLevelAndPlay(lvl) {
+      config.level = lvl;
+      document.getElementById('optCardCount').value = lvl === 1 ? '8' : '12';
+      switchTab('gioco');
+      initGame();
+    }
+
+    function saveOptionsAndPlay(e) {
+      e.preventDefault();
+      config.theme = document.getElementById('optTheme').value;
+      config.cardCount = parseInt(document.getElementById('optCardCount').value);
+      config.shape = document.getElementById('optShape').value;
+      config.lang = document.getElementById('optLang').value;
+      config.timerSeconds = parseInt(document.getElementById('optTimer').value);
+      config.gameMode = document.getElementById('optGameMode').value;
+
+      switchTab('gioco');
+      initGame();
+    }
+
+    /* SYNTHESIZED WEB AUDIO SOUNDS */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playAudio(type) {
+      if (!config.soundEnabled) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'flip') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(550, now + 0.08);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'match') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523, now);
+          osc.frequency.setValueAtTime(659, now + 0.1);
+          osc.frequency.setValueAtTime(783, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(200, now);
+          osc.frequency.linearRampToValueAtTime(130, now + 0.18);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+          osc.start(now);
+          osc.stop(now + 0.18);
+        }
+      } catch (e) {
+        console.log("Audio Error", e);
+      }
+    }
+
+    /* TEXT TO SPEECH (TTS) */
+    function speakText(text) {
+      if (!config.ttsEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = config.lang === 'en' ? 'en-US' : (config.lang === 'fr' ? 'fr-FR' : (config.lang === 'es' ? 'es-ES' : (config.lang === 'de' ? 'de-DE' : 'it-IT')));
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleTTS() {
+      config.ttsEnabled = !config.ttsEnabled;
+      document.getElementById('ttsStatus').textContent = config.ttsEnabled ? 'ON' : 'OFF';
+      if (config.ttsEnabled) speakText("Sintesi vocale lettore attivata");
+    }
+
+    function toggleDyslexiaFont() {
+      config.dyslexiaMode = !config.dyslexiaMode;
+      document.body.classList.toggle('font-dyslexia-mode', config.dyslexiaMode);
+    }
+
+    /* INITIALIZE GAME */
+    function initGame() {
+      clearInterval(gameState.timer);
+
+      const themeObj = VECTOR_DATABASE[config.theme] || VECTOR_DATABASE.egitti;
+      const keys = Object.keys(themeObj);
+      const pairsNeeded = config.cardCount / 2;
+
+      const selectedKeys = shuffleArray(keys).slice(0, pairsNeeded);
+
+      let deck = [];
+      selectedKeys.forEach((k, idx) => {
+        const item = themeObj[k];
+        const pairId = `pair_${idx}`;
+
+        if (config.level === 1) {
+          deck.push({ pairId, content: { type: 'graphic', graphic: item, text: item.title } });
+          deck.push({ pairId, content: { type: 'graphic', graphic: item, text: item.title } });
+        } else if (config.level === 2) {
+          const trans = DICTIONARY[item.title] ? DICTIONARY[item.title][config.lang] || item.title : item.title;
+          deck.push({ pairId, content: { type: 'graphic', graphic: item, text: item.title } });
+          deck.push({ pairId, content: { type: 'text', text: trans } });
+        } else if (config.level === 3) {
+          deck.push({ pairId, content: { type: 'graphic', graphic: item, text: item.title } });
+          deck.push({ pairId, content: { type: 'text', head: 'AZIONE / SIMBOLO', text: `Simbolo celebre di ${item.title}` } });
+        } else if (config.level === 4) {
+          deck.push({ pairId, content: { type: 'graphic', graphic: item, text: item.title } });
+          deck.push({ pairId, content: { type: 'text', head: 'DATA STORICA', text: `Epoca di ${item.title}` } });
+        } else {
+          deck.push({ pairId, content: { type: 'graphic', graphic: item, text: item.title } });
+          deck.push({ pairId, content: { type: 'text', head: 'CONSEGUENZA', text: `Effetto storico legato a ${item.title}` } });
+        }
+      });
+
+      deck = shuffleArray(deck);
+
+      gameState = {
+        cards: deck,
+        flippedCards: [],
+        matchedPairs: 0,
+        moves: 0,
+        activePlayer: 1,
+        p1Score: 0,
+        p2Score: 0,
+        timer: null,
+        timeElapsed: 0,
+        isProcessing: false
+      };
+
+      document.getElementById('movesCount').textContent = '0';
+      document.getElementById('pairsFound').textContent = '0';
+      document.getElementById('totalPairs').textContent = pairsNeeded;
+
+      updateTurnUI();
+      updateLevelUI();
+      updateBanner("Osserva le tessere e memorizza la loro posizione!", "sky");
+
+      if (config.timerSeconds > 0) {
+        startTimer(config.timerSeconds);
+      } else {
+        document.getElementById('displayTimer').textContent = "Illimitato";
+      }
+
+      renderGrid();
+    }
+
+    /* RENDER MEMORY GRID */
+    function renderGrid() {
+      const grid = document.getElementById('gameGrid');
+      grid.innerHTML = '';
+
+      const count = config.cardCount;
+      if (count <= 8) grid.className = "w-full grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto my-auto";
+      else if (count <= 12) grid.className = "w-full grid grid-cols-3 sm:grid-cols-4 gap-3 max-w-3xl mx-auto my-auto";
+      else grid.className = "w-full grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3 max-w-5xl mx-auto my-auto";
+
+      gameState.cards.forEach((card, index) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = `card perspective-1000 h-32 sm:h-36 w-full`;
+
+        const inner = document.createElement('div');
+        inner.className = `card-inner`;
+
+        // Back
+        const back = document.createElement('div');
+        back.className = `card-back theme-${config.theme} ${config.shape}`;
+        back.innerHTML = `<i class="fa-solid fa-gem text-xl"></i><span class="text-[9px] font-black uppercase mt-1">MEMORY</span>`;
+
+        // Front
+        const front = document.createElement('div');
+        front.className = `card-front ${config.shape}`;
+
+        if (card.content.type === 'graphic') {
+          front.innerHTML = `
+            <div class="svg-art">${card.content.graphic.svg}</div>
+            <span class="text-[11px] font-bold text-slate-800 line-clamp-1 leading-tight text-center px-1">${card.content.text}</span>
+          `;
+        } else {
+          const head = card.content.head ? `<span class="text-[9px] font-black text-sky-700 uppercase block">${card.content.head}</span>` : '';
+          front.innerHTML = `
+            ${head}
+            <span class="text-xs font-black text-slate-900 leading-tight px-1 text-center my-auto">${card.content.text}</span>
+          `;
+        }
+
+        inner.appendChild(back);
+        inner.appendChild(front);
+        cardEl.appendChild(inner);
+
+        cardEl.addEventListener('click', () => onCardClick(index, cardEl));
+        grid.appendChild(cardEl);
+      });
+    }
+
+    /* CLICK CARD */
+    function onCardClick(index, cardEl) {
+      if (gameState.isProcessing) return;
+      if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+
+      cardEl.classList.add('flipped');
+      playAudio('flip');
+
+      const card = gameState.cards[index];
+      speakText(card.content.text);
+
+      gameState.flippedCards.push({ index, cardEl, card });
+
+      if (gameState.flippedCards.length === 2) {
+        gameState.moves++;
+        document.getElementById('movesCount').textContent = gameState.moves;
+        checkPair();
+      }
+    }
+
+    function checkPair() {
+      gameState.isProcessing = true;
+      const [c1, c2] = gameState.flippedCards;
+
+      if (c1.card.pairId === c2.card.pairId) {
+        setTimeout(() => {
+          c1.cardEl.classList.add('matched');
+          c2.cardEl.classList.add('matched');
+          playAudio('match');
+
+          gameState.matchedPairs++;
+          document.getElementById('pairsFound').textContent = gameState.matchedPairs;
+
+          if (config.gameMode === 'coop') {
+            if (gameState.activePlayer === 1) gameState.p1Score++; else gameState.p2Score++;
+            updateBanner(`Ottimo! Giocatore ${gameState.activePlayer} ha trovato una coppia e gioca ancora!`, 'emerald');
+          } else {
+            updateBanner("Coppia trovata! Bravissimo, la tua memoria visiva migliora!", "emerald");
+          }
+
+          gameState.flippedCards = [];
+          gameState.isProcessing = false;
+
+          if (gameState.matchedPairs === config.cardCount / 2) {
+            onWin();
+          }
+        }, 500);
+      } else {
+        setTimeout(() => {
+          playAudio('error');
+          c1.cardEl.classList.remove('flipped');
+          c2.cardEl.classList.remove('flipped');
+
+          if (config.gameMode === 'coop') {
+            gameState.activePlayer = gameState.activePlayer === 1 ? 2 : 1;
+            updateTurnUI();
+            updateBanner(`Non corrispondevano. Passaggio del turno al Giocatore ${gameState.activePlayer}!`, 'amber');
+          } else {
+            updateBanner("Nessun problema! Fai un respiro e ricorda dove si trovava la carta.", "amber");
+          }
+
+          gameState.flippedCards = [];
+          gameState.isProcessing = false;
+        }, 1200);
+      }
+    }
+
+    /* TIMER */
+    function startTimer(sec) {
+      let rem = sec;
+      updateTimerDisplay(rem);
+      gameState.timer = setInterval(() => {
+        gameState.timeElapsed++;
+        rem--;
+        updateTimerDisplay(rem);
+        if (rem <= 0) {
+          clearInterval(gameState.timer);
+          updateBanner("Tempo scaduto! Fai una pausa e riprova senza ansia.", "rose");
+          gameState.isProcessing = true;
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      document.getElementById('displayTimer').textContent = `${m}:${s}`;
+    }
+
+    /* WIN & REPORT POPULATE */
+    function onWin() {
+      clearInterval(gameState.timer);
+      
+      const totalPairs = config.cardCount / 2;
+      const accuracy = Math.max(10, Math.round((totalPairs / gameState.moves) * 100));
+
+      document.getElementById('repLevel').textContent = `Livello ${config.level}`;
+      document.getElementById('repMoves').textContent = gameState.moves;
+      document.getElementById('repTime').textContent = `${gameState.timeElapsed}s`;
+      document.getElementById('repAccuracy').textContent = `${accuracy}%`;
+
+      updateBanner("COMPLIMENTI! Hai trovato tutte le coppie storiche!", "emerald");
+      
+      setTimeout(() => {
+        switchTab('report');
+      }, 1200);
+    }
+
+    /* UI HELPERS */
+    function updateTurnUI() {
+      const el = document.getElementById('displayTurn');
+      if (config.gameMode === 'coop') {
+        el.textContent = `Turno: Giocatore ${gameState.activePlayer}`;
+      } else {
+        el.textContent = "Giocatore Singolo";
+      }
+    }
+
+    function updateLevelUI() {
+      const el = document.getElementById('displayLevel');
+      const labels = [
+        "L1: Grafica - Grafica",
+        "L2: Grafica - Parola",
+        "L3: Oggetto - Simbolo",
+        "L4: Fatto - Data",
+        "L5: Causa - Conseguenza"
+      ];
+      el.textContent = labels[config.level - 1] || "Livello 2";
+    }
+
+    function updateBanner(msg, type) {
+      const b = document.getElementById('gameBanner');
+      document.getElementById('bannerText').textContent = msg;
+
+      b.className = "p-3.5 rounded-xl text-center font-bold text-xs sm:text-sm border shadow-sm flex items-center justify-center gap-2 ";
+      if (type === 'emerald') b.classList.add('bg-emerald-100', 'text-emerald-900', 'border-emerald-300');
+      else if (type === 'amber') b.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+      else if (type === 'rose') b.classList.add('bg-rose-100', 'text-rose-900', 'border-rose-300');
+      else b.classList.add('bg-sky-100', 'text-sky-900', 'border-sky-300');
+    }
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function downloadApp() {
+      const content = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([content], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Memory_Storico_Didattico_App.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    window.onload = function() {
+      initGame();
+    };
+  </script>
+</body>
+</html>
